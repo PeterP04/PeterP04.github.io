@@ -1,4 +1,4 @@
- # Sonic Adventure 2 Speedruns
+# Sonic Adventure 2 Speedruns
 ![](https://upload.wikimedia.org/wikipedia/en/9/99/Sonic_Adventure_2_cover.png)
 
 Dreamcast cover art of Sonic Adventure 2 by Yuji Uekawa
