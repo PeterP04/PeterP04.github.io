@@ -18,6 +18,7 @@ map.on('click', (e) => {
     .addTo(map);
   points.push(coords);
   console.log('Point added:', coords);
+  console.log('Current points:', points); // Debugging the points array
 });
 
 // Measure distance between two points
@@ -29,11 +30,13 @@ document.getElementById('distance').addEventListener('click', () => {
 
   const start = points[0];
   const end = points[1];
-  
+  console.log('Measuring distance between:', start, end);
+
   const from = turf.point([start.lng, start.lat]);
   const to = turf.point([end.lng, end.lat]);
-  
+
   const distance = turf.distance(from, to, { units: 'kilometers' });
+  console.log('Distance:', distance);
   document.getElementById('output').innerText = `Distance: ${distance.toFixed(2)} km`;
 });
 
@@ -46,7 +49,8 @@ document.getElementById('nearest').addEventListener('click', () => {
 
   const queryPoint = points[0]; // Find the nearest neighbor to the first point
   const pointsCollection = points.slice(1).map(p => turf.point([p.lng, p.lat]));
-  
+  console.log('Query point:', queryPoint);
+
   const query = turf.point([queryPoint.lng, queryPoint.lat]);
   
   let nearest = null;
@@ -54,17 +58,23 @@ document.getElementById('nearest').addEventListener('click', () => {
   
   pointsCollection.forEach(p => {
     const distance = turf.distance(query, p, { units: 'kilometers' });
+    console.log('Distance to point:', distance);
     if (distance < minDistance) {
       minDistance = distance;
       nearest = p;
     }
   });
 
-  const nearestCoords = nearest.geometry.coordinates;
-  document.getElementById('output').innerText = `Nearest Neighbor: [${nearestCoords[0].toFixed(4)}, ${nearestCoords[1].toFixed(4)}] - Distance: ${minDistance.toFixed(2)} km`;
+  if (nearest) {
+    const nearestCoords = nearest.geometry.coordinates;
+    console.log('Nearest neighbor found:', nearestCoords);
+    document.getElementById('output').innerText = `Nearest Neighbor: [${nearestCoords[0].toFixed(4)}, ${nearestCoords[1].toFixed(4)}] - Distance: ${minDistance.toFixed(2)} km`;
+  } else {
+    console.log('No nearest neighbor found.');
+  }
 });
 
-// Buffer around a point
+// Create a buffer around a point
 document.getElementById('buffer').addEventListener('click', () => {
   if (points.length < 1) {
     alert('Please add at least one point on the map.');
@@ -72,6 +82,8 @@ document.getElementById('buffer').addEventListener('click', () => {
   }
 
   const point = points[0]; // Use the first point
+  console.log('Creating buffer around point:', point);
+
   const buffered = turf.buffer(turf.point([point.lng, point.lat]), 1, { units: 'kilometers' });
 
   map.addSource('buffer', {
@@ -90,5 +102,6 @@ document.getElementById('buffer').addEventListener('click', () => {
     }
   });
 
-  document.getElementById('output').innerText = 'Buffer created with a 1 km radius';
+  console.log('Buffer created:', buffered);
+  document.getElementById('output').innerText = 'Buffer created with a 1 km radius around the point.';
 });
