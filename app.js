@@ -37,7 +37,9 @@ document.getElementById('distance').addEventListener('click', () => {
 
   const distance = turf.distance(from, to, { units: 'kilometers' });
   console.log('Distance:', distance);
-  document.getElementById('output').innerText = `Distance: ${distance.toFixed(2)} km`;
+
+  // Display the result
+  document.getElementById('output').innerText = `Distance between points: ${distance.toFixed(2)} km`;
 });
 
 // Find the nearest neighbor
@@ -71,6 +73,7 @@ document.getElementById('nearest').addEventListener('click', () => {
     document.getElementById('output').innerText = `Nearest Neighbor: [${nearestCoords[0].toFixed(4)}, ${nearestCoords[1].toFixed(4)}] - Distance: ${minDistance.toFixed(2)} km`;
   } else {
     console.log('No nearest neighbor found.');
+    document.getElementById('output').innerText = 'No nearest neighbor found.';
   }
 });
 
