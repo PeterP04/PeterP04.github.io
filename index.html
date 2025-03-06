@@ -59,6 +59,18 @@
             zoom: 12
         });
 
+        const geojsonFiles = {
+            2020: 'NYC_Traffic_2020.geojson',
+            2021: 'NYC_Traffic_2021.geojson',
+            2022: 'NYC_Traffic_2022.geojson',
+            2023: 'NYC_Traffic_2023.geojson'
+        };
+
+        const loadGeoJSON = async (year) => {
+            const response = await fetch(geojsonFiles[year]);
+            return await response.json();
+        };
+
         const addTrafficLayers = (data) => {
             if (map.getSource('traffic-flow')) {
                 map.removeLayer('traffic-heat');
@@ -74,7 +86,7 @@
                 type: 'heatmap',
                 source: 'traffic-flow',
                 paint: {
-                    'heatmap-weight': ['interpolate', ['linear'], ['coalesce', ['get', 'AADT_2020'], 0], 0, 0, 10000, 1],
+                    'heatmap-weight': ['interpolate', ['linear'], ['get', 'AADT'], 0, 0, 10000, 1],
                     'heatmap-intensity': ['interpolate', ['linear'], ['zoom'], 10, 1, 15, 3],
                     'heatmap-color': [
                         'interpolate', ['linear'], ['heatmap-density'],
@@ -91,16 +103,12 @@
             });
         };
 
-        const updateMap = (year) => {
-            const property = `AADT_${year}`;
-            if (map.getLayer('traffic-heat')) {
-                map.setPaintProperty('traffic-heat', 'heatmap-weight', [
-                    'interpolate', ['linear'], 
-                    ['coalesce', ['get', property], 0], // Use 0 if property is missing
-                    0, 0, 
-                    100000, 1 
-                ]);
-                console.log(`Updated heatmap for: ${property}`); // Debugging log
+        const updateMap = async (year) => {
+            const data = await loadGeoJSON(year);
+            if (map.getSource('traffic-flow')) {
+                map.getSource('traffic-flow').setData(data);
+            } else {
+                addTrafficLayers(data);
             }
         };
 
@@ -111,11 +119,8 @@
         });
 
         map.on('load', async () => {
-            const response = await fetch('NYC_Traffic.geojson');
-            const data = await response.json();
-            console.log(data.features[0].properties); // Debugging: Check the properties structure
-            addTrafficLayers(data);
-            updateMap(2020); // Set initial filter
+            const initialData = await loadGeoJSON(2020);
+            addTrafficLayers(initialData);
         });
     </script>
 </body>
