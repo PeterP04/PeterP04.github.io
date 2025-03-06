@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NYC Traffic Heatmap</title>
+    <title>NYC Traffic Map</title>
     <link href="https://api.mapbox.com/mapbox-gl-js/v2.5.0/mapbox-gl.css" rel="stylesheet">
     <script src="https://api.mapbox.com/mapbox-gl-js/v2.5.0/mapbox-gl.js"></script>
     <style>
@@ -12,200 +12,101 @@
             margin: 0;
             padding: 0;
             height: 100%;
-            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            font-family: Arial, sans-serif;
         }
-
         #map {
             position: absolute;
             top: 0;
             bottom: 0;
             width: 100%;
         }
-
         #controls {
             position: absolute;
-            top: 30px;
-            left: 30px;
-            background: rgba(255, 255, 255, 0.9);
-            padding: 15px 20px;
+            top: 20px;
+            left: 20px;
+            background: white;
+            padding: 15px;
             border-radius: 8px;
-            box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
-            max-width: 300px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
         }
-
-        h1 {
-            font-size: 18px;
-            margin: 0 0 10px 0;
-        }
-
-        h2 {
-            font-size: 14px;
-            margin: 0 0 10px 0;
-        }
-
-        .session {
-            margin-bottom: 20px;
-        }
-
-        .label {
-            font-size: 14px;
-            color: #333;
-        }
-
         #yearSlider {
             width: 100%;
-        }
-
-        .legend {
-            display: flex;
-            flex-direction: column;
-            gap: 5px;
-        }
-
-        .legend-item {
-            display: flex;
-            align-items: center;
-        }
-
-        .legend-color {
-            width: 20px;
-            height: 20px;
-            margin-right: 10px;
         }
     </style>
 </head>
 
 <body>
-
     <div id="map"></div>
     <div id="controls">
-        <h1>NYC Traffic Heatmap</h1>
-        <div class="session">
-            <h2>Year: <span id="active-year" class="label">2020</span></h2>
-            <input id="yearSlider" type="range" min="2020" max="2025" step="1" value="2020">
-        </div>
-        <div class="session">
-            <h2>Intensity Legend</h2>
-            <div class="legend">
-                <div class="legend-item">
-                    <div class="legend-color" style="background-color: #00ff00;"></div>
-                    <span class="label">Low</span>
-                </div>
-                <div class="legend-item">
-                    <div class="legend-color" style="background-color: #ffff00;"></div>
-                    <span class="label">Moderate</span>
-                </div>
-                <div class="legend-item">
-                    <div class="legend-color" style="background-color: #ffbf00;"></div>
-                    <span class="label">High</span>
-                </div>
-                <div class="legend-item">
-                    <div class="legend-color" style="background-color: #ff8000;"></div>
-                    <span class="label">Very High</span>
-                </div>
-                <div class="legend-item">
-                    <div class="legend-color" style="background-color: #ff0000;"></div>
-                    <span class="label">Extreme</span>
-                </div>
-            </div>
-        </div>
+        <h2>NYC Traffic Heatmap</h2>
+        <label for="yearSlider">Year: <span id="yearLabel">2020</span></label>
+        <input id="yearSlider" type="range" min="2016" max="2023" step="1" value="2020">
     </div>
 
     <script>
         mapboxgl.accessToken = 'pk.eyJ1IjoiZWR3YXJkcDciLCJhIjoiY2xzZjZhZnYwMGdrbDJpcXB6MzZsN2lzbSJ9.o11htKQkTmOqa1HNdhtenQ';
-
         const map = new mapboxgl.Map({
             container: 'map',
-            style: 'mapbox://styles/mapbox/light-v11',
+            style: 'mapbox://styles/mapbox/dark-v11',
             center: [-74.006, 40.7128], // NYC coordinates
-            zoom: 11
+            zoom: 10
         });
 
-        // Define paths to pre-split GeoJSON files
         const geojsonFiles = {
-            2020: 'NYC_Traffic_2020.geojson',
-            2021: 'NYC_Traffic_2021.geojson',
-            2022: 'NYC_Traffic_2022.geojson',
-            2023: 'NYC_Traffic_2023.geojson',
-            2024: 'NYC_Traffic_2024.geojson',
-            2025: 'NYC_Traffic_2025.geojson'
+            2016: 'split_nyc_traffic/NYC_Traffic_2016.geojson',
+            2017: 'split_nyc_traffic/NYC_Traffic_2017.geojson',
+            2018: 'split_nyc_traffic/NYC_Traffic_2018.geojson',
+            2019: 'split_nyc_traffic/NYC_Traffic_2019.geojson',
+            2020: 'split_nyc_traffic/NYC_Traffic_2020.geojson',
+            2021: 'split_nyc_traffic/NYC_Traffic_2021.geojson',
+            2022: 'split_nyc_traffic/NYC_Traffic_2022.geojson',
+            2023: 'split_nyc_traffic/NYC_Traffic_2023.geojson'
         };
 
-        // Function to load and update GeoJSON data
-        const updateMap = async (year) => {
-            const response = await fetch(geojsonFiles[year]);
-            const data = await response.json();
-
-            if (map.getSource('traffic-flow')) {
-                map.getSource('traffic-flow').setData(data);
-            } else {
-                map.addSource('traffic-flow', {
-                    type: 'geojson',
-                    data: data
-                });
-
-                // Add heatmap layer
-                map.addLayer({
-                    id: 'traffic-heat',
-                    type: 'heatmap',
-                    source: 'traffic-flow',
-                    maxzoom: 15,
-                    paint: {
-                        'heatmap-weight': {
-                            property: 'AADT',
-                            type: 'exponential',
-                            stops: [
-                                [0, 0],
-                                [5000, 0.5],
-                                [50000, 1]
-                            ]
-                        },
-                        'heatmap-intensity': {
-                            stops: [
-                                [11, 1],
-                                [15, 3]
-                            ]
-                        },
-                        'heatmap-color': [
-                            'interpolate',
-                            ['linear'],
-                            ['heatmap-density'],
-                            0, 'rgba(0,255,0,0)',       
-                            0.2, 'rgb(0,255,0)',      
-                            0.4, 'rgb(255,255,0)',    
-                            0.6, 'rgb(255,191,0)',    
-                            0.8, 'rgb(255,128,0)',    
-                            1, 'rgb(255,0,0)'        
-                        ],
-                        'heatmap-radius': {
-                            stops: [
-                                [11, 15],
-                                [15, 20]
-                            ]
-                        },
-                        'heatmap-opacity': {
-                            stops: [
-                                [14, 1],
-                                [15, 0]
-                            ]
-                        }
+        function updateMap(year) {
+            document.getElementById('yearLabel').textContent = year;
+            fetch(geojsonFiles[year])
+                .then(response => response.json())
+                .then(data => {
+                    if (map.getSource('traffic-data')) {
+                        map.getSource('traffic-data').setData(data);
+                    } else {
+                        map.addSource('traffic-data', {
+                            type: 'geojson',
+                            data: data
+                        });
+                        map.addLayer({
+                            id: 'traffic-heat',
+                            type: 'heatmap',
+                            source: 'traffic-data',
+                            paint: {
+                                'heatmap-weight': ['interpolate', ['linear'], ['get', 'AADT'], 0, 0, 100000, 1],
+                                'heatmap-intensity': ['interpolate', ['linear'], ['zoom'], 10, 1, 15, 3],
+                                'heatmap-color': [
+                                    'interpolate', ['linear'], ['heatmap-density'],
+                                    0, 'rgba(0,0,255,0)',
+                                    0.2, 'blue',
+                                    0.4, 'cyan',
+                                    0.6, 'lime',
+                                    0.8, 'yellow',
+                                    1, 'red'
+                                ],
+                                'heatmap-radius': ['interpolate', ['linear'], ['zoom'], 10, 15, 15, 30],
+                                'heatmap-opacity': 0.75
+                            }
+                        });
                     }
-                });
-            }
-        };
+                })
+                .catch(error => console.error('Error loading GeoJSON:', error));
+        }
 
-        // Event listener for the year slider
         document.getElementById('yearSlider').addEventListener('input', (event) => {
-            const year = event.target.value;
-            document.getElementById('active-year').textContent = year;
-            updateMap(year);
+            updateMap(event.target.value);
         });
 
-        // Load initial data for 2020
         map.on('load', () => {
             updateMap(2020);
         });
     </script>
-
 </body>
 </html>
