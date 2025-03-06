@@ -1,39 +1,72 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en-US">
+
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Mapbox Spatial Analysis with Turf.js</title>
-  
-  <!-- Mapbox CSS (This loads the Mapbox style) -->
-  <link href="https://api.mapbox.com/mapbox-gl-js/v2.10.0/mapbox-gl.css" rel="stylesheet">
-  
-  <!-- Mapbox GL JS (This loads the Mapbox JavaScript library) -->
-  <script src="https://api.mapbox.com/mapbox-gl-js/v2.10.0/mapbox-gl.js"></script>
-  
-  <!-- Turf.js from unpkg (This loads Turf.js via a different CDN) -->
-  <script src="https://unpkg.com/@turf/turf"></script>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NYC Traffic Project</title>
+    <link href="https://api.mapbox.com/mapbox-gl-js/v2.5.0/mapbox-gl.css" rel="stylesheet">
+    <script src="https://api.mapbox.com/mapbox-gl-js/v2.5.0/mapbox-gl.js"></script>
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+        }
 
-  <style>
-    body { margin: 0; padding: 0; }
-    #map { position: absolute; top: 0; bottom: 0; width: 100%; height: 100%; }
-    .control-panel { position: absolute; top: 10px; left: 10px; background: white; padding: 10px; z-index: 1; }
-    .button { margin-bottom: 10px; padding: 10px; cursor: pointer; background-color: #0077cc; color: white; border: none; }
-    #output { margin-top: 10px; font-size: 14px; color: #333; }
-  </style>
+        #map {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: 100%;
+        }
+    </style>
 </head>
+
 <body>
+    <div id="map"></div>
 
-<div id="map"></div>
-<div class="control-panel">
-  <button id="distance" class="button">Measure Distance</button>
-  <button id="nearest" class="button">Find Nearest Neighbor</button>
-  <button id="buffer" class="button">Create Buffer</button>
-  <div id="output"></div>
-</div>
+    <script>
+        mapboxgl.accessToken = 'pk.eyJ1IjoiZWR3YXJkcDciLCJhIjoiY2xzZjZhZnYwMGdrbDJpcXB6MzZsN2lzbSJ9.o11htKQkTmOqa1HNdhtenQ';
+        const map = new mapboxgl.Map({
+            container: 'map',
+            style: 'mapbox://styles/mapbox/light-v11',
+            center: [-74.006, 40.7128], // New York City coordinates
+            zoom: 12
+        });
 
-<!-- Your Custom JavaScript File (app.js) -->
-<script src="app.js"></script>
+        map.on('load', async () => {
+            const response = await fetch('NYC_Traffic.geojson');
+            const data = await response.json();
 
+            map.addSource('traffic-flow', {
+                type: 'geojson',
+                data: data
+            });
+
+            map.addLayer({
+                id: 'traffic-heat',
+                type: 'heatmap',
+                source: 'traffic-flow',
+                paint: {
+                    'heatmap-weight': ['interpolate', ['linear'], ['get', 'traffic'], 1, 0, 100, 1],
+                    'heatmap-intensity': ['interpolate', ['linear'], ['zoom'], 10, 1, 15, 3],
+                    'heatmap-color': [
+                        'interpolate', ['linear'], ['heatmap-density'],
+                        0, 'rgba(0,255,0,0)',
+                        0.2, 'rgb(0,255,0)',
+                        0.4, 'rgb(255,255,0)',
+                        0.6, 'rgb(255,191,0)',
+                        0.8, 'rgb(255,128,0)',
+                        1, 'rgb(255,0,0)'
+                    ],
+                    'heatmap-radius': ['interpolate', ['linear'], ['zoom'], 10, 15, 15, 20],
+                    'heatmap-opacity': ['interpolate', ['linear'], ['zoom'], 14, 1, 15, 0]
+                }
+            });
+        });
+    </script>
 </body>
+
 </html>
