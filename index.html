@@ -92,9 +92,9 @@
         };
 
         const updateMap = (year) => {
-            map.setFilter('traffic-heat', ['==', ['get', 'year'], parseInt(year)]);
+        const property = `AADT_${year}`; // Dynamically construct the property name
+        map.setFilter('traffic-heat', ['has', property]); // Filter features that have the property
         };
-
         document.getElementById('yearSlider').addEventListener('input', (event) => {
             const year = event.target.value;
             document.getElementById('active-year').textContent = year;
