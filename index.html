@@ -74,7 +74,7 @@
                 type: 'heatmap',
                 source: 'traffic-flow',
                 paint: {
-                    'heatmap-weight': ['interpolate', ['linear'], ['get', 'AADT_2020'], 0, 0, 10000, 1],
+                    'heatmap-weight': ['interpolate', ['linear'], ['coalesce', ['get', 'AADT_2020'], 0], 0, 0, 10000, 1],
                     'heatmap-intensity': ['interpolate', ['linear'], ['zoom'], 10, 1, 15, 3],
                     'heatmap-color': [
                         'interpolate', ['linear'], ['heatmap-density'],
@@ -95,9 +95,12 @@
             const property = `AADT_${year}`;
             if (map.getLayer('traffic-heat')) {
                 map.setPaintProperty('traffic-heat', 'heatmap-weight', [
-                    'interpolate', ['linear'], ['get', property], 
-                    0, 0, 100000, 1 
+                    'interpolate', ['linear'], 
+                    ['coalesce', ['get', property], 0], // Use 0 if property is missing
+                    0, 0, 
+                    100000, 1 
                 ]);
+                console.log(`Updated heatmap for: ${property}`); // Debugging log
             }
         };
 
@@ -110,6 +113,7 @@
         map.on('load', async () => {
             const response = await fetch('NYC_Traffic.geojson');
             const data = await response.json();
+            console.log(data.features[0].properties); // Debugging: Check the properties structure
             addTrafficLayers(data);
             updateMap(2020); // Set initial filter
         });
