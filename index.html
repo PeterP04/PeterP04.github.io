@@ -59,20 +59,6 @@
             zoom: 12
         });
 
-        const geojsonFiles = {
-            2020: 'NYC_Traffic_2020.geojson',
-            2021: 'NYC_Traffic_2021.geojson',
-            2022: 'NYC_Traffic_2022.geojson',
-            2023: 'NYC_Traffic_2023.geojson',
-            2024: 'NYC_Traffic_2024.geojson',
-            2025: 'NYC_Traffic_2025.geojson'
-        };
-
-        const loadGeoJSON = async (year) => {
-            const response = await fetch(geojsonFiles[year]);
-            return await response.json();
-        };
-
         const addTrafficLayers = (data) => {
             if (map.getSource('traffic-flow')) {
                 map.removeLayer('traffic-heat');
@@ -105,13 +91,8 @@
             });
         };
 
-        const updateMap = async (year) => {
-            const data = await loadGeoJSON(year);
-            if (map.getSource('traffic-flow')) {
-                map.getSource('traffic-flow').setData(data);
-            } else {
-                addTrafficLayers(data);
-            }
+        const updateMap = (year) => {
+            map.setFilter('traffic-heat', ['==', ['get', 'year'], parseInt(year)]);
         };
 
         document.getElementById('yearSlider').addEventListener('input', (event) => {
@@ -121,8 +102,10 @@
         });
 
         map.on('load', async () => {
-            const initialData = await loadGeoJSON(2020);
-            addTrafficLayers(initialData);
+            const response = await fetch('NYC_Traffic.geojson');
+            const data = await response.json();
+            addTrafficLayers(data);
+            updateMap(2020); // Set initial filter
         });
     </script>
 </body>
