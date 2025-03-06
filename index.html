@@ -74,7 +74,7 @@
                 type: 'heatmap',
                 source: 'traffic-flow',
                 paint: {
-                    'heatmap-weight': ['interpolate', ['linear'], ['get', 'traffic'], 1, 0, 100, 1],
+                    'heatmap-weight': ['interpolate', ['linear'], ['get', 'AADT_2020'], 0, 0, 10000, 1],
                     'heatmap-intensity': ['interpolate', ['linear'], ['zoom'], 10, 1, 15, 3],
                     'heatmap-color': [
                         'interpolate', ['linear'], ['heatmap-density'],
@@ -92,9 +92,15 @@
         };
 
         const updateMap = (year) => {
-        const property = `AADT_${year}`; // Dynamically construct the property name
-        map.setFilter('traffic-heat', ['has', property]); // Filter features that have the property
+            const property = `AADT_${year}`;
+            if (map.getLayer('traffic-heat')) {
+                map.setPaintProperty('traffic-heat', 'heatmap-weight', [
+                    'interpolate', ['linear'], ['get', property], 
+                    0, 0, 100000, 1 
+                ]);
+            }
         };
+
         document.getElementById('yearSlider').addEventListener('input', (event) => {
             const year = event.target.value;
             document.getElementById('active-year').textContent = year;
