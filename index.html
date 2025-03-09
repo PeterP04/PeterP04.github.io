@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>New York Collision Map</title>
+    <title>New York City Collision Map</title>
     <link href="https://api.mapbox.com/mapbox-gl-js/v2.5.0/mapbox-gl.css" rel="stylesheet">
     <script src="https://api.mapbox.com/mapbox-gl-js/v2.5.0/mapbox-gl.js"></script>
     <style>
@@ -33,7 +33,7 @@
 <body>
     <div id="map"></div>
     <div id="controls">
-        <h1>New York Collision Map</h1>
+        <h1>New York City Collision Map</h1>
         <label for="yearSlider">Year: <span id="active-year">2020</span></label>
         <input id="yearSlider" type="range" min="2020" max="2025" step="1" value="2020">
     </div>
@@ -41,7 +41,7 @@
         mapboxgl.accessToken = 'pk.eyJ1IjoiZWR3YXJkcDciLCJhIjoiY2xzZjZhZnYwMGdrbDJpcXB6MzZsN2lzbSJ9.o11htKQkTmOqa1HNdhtenQ';
         const map = new mapboxgl.Map({
             container: 'map',
-            style: 'mapbox://styles/mapbox/dark-v11',
+            style: 'mapbox://styles/mapbox/light-v11',
             center: [-74.006, 40.7128],
             zoom: 10
         });
@@ -63,7 +63,6 @@
         const updateMap = async (year) => {
             const collisionData = await loadGeoJSON(collisionGeojsonFiles[year]);
 
-            // Remove old layers and sources
             if (map.getLayer('collision-cluster')) map.removeLayer('collision-cluster');
             if (map.getLayer('collision-count')) map.removeLayer('collision-count');
             if (map.getLayer('collision-points')) map.removeLayer('collision-points');
