@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>New York Collision Map</title>
+    <title>NYC Crash Clusters</title>
     <link href="https://api.mapbox.com/mapbox-gl-js/v2.5.0/mapbox-gl.css" rel="stylesheet">
     <script src="https://api.mapbox.com/mapbox-gl-js/v2.5.0/mapbox-gl.js"></script>
     <style>
@@ -11,7 +11,7 @@
             margin: 0;
             padding: 0;
             height: 100%;
-            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            font-family: Arial, sans-serif;
         }
         #map {
             position: absolute;
@@ -21,21 +21,20 @@
         }
         #controls {
             position: absolute;
-            top: 30px;
-            left: 30px;
+            top: 20px;
+            left: 20px;
             background: rgba(255, 255, 255, 0.9);
-            padding: 15px 20px;
+            padding: 10px 15px;
             border-radius: 8px;
-            box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
         }
     </style>
 </head>
 <body>
     <div id="map"></div>
     <div id="controls">
-        <h1>New York Traffic Flow</h1>
         <label for="yearSlider">Year: <span id="active-year">2020</span></label>
-        <input id="yearSlider" type="range" min="2020" max="2023" step="1" value="2020">
+        <input id="yearSlider" type="range" min="2020" max="2025" step="1" value="2020">
     </div>
     <script>
         mapboxgl.accessToken = 'pk.eyJ1IjoiZWR3YXJkcDciLCJhIjoiY2xzZjZhZnYwMGdrbDJpcXB6MzZsN2lzbSJ9.o11htKQkTmOqa1HNdhtenQ';
@@ -46,88 +45,74 @@
             zoom: 10
         });
 
-        const collisionGeojsonFiles = {
-            2020: 'NewYork_Crashes_2020.geojson',
-            2021: 'NewYork_Crashes_2021.geojson',
-            2022: 'NewYork_Crashes_2022.geojson',
-            2023: 'NewYork_Crashes_2023.geojson',
-            2024: 'NewYork_Crashes_2024.geojson',
-            2025: 'NewYork_Crashes_2025.geojson'
-        };
-
-        const loadGeoJSON = async (file) => {
-            const response = await fetch(file + "?t=" + new Date().getTime());
-            return await response.json();
+        const crashDataFiles = {
+            2020: 'nyc_crashes_2020.geojson',
+            2021: 'nyc_crashes_2021.geojson',
+            2022: 'nyc_crashes_2022.geojson',
+            2023: 'nyc_crashes_2023.geojson',
+            2024: 'nyc_crashes_2024.geojson',
+            2025: 'nyc_crashes_2025.geojson'
         };
 
         const updateMap = async (year) => {
-            const collisionData = await loadGeoJSON(collisionGeojsonFiles[year]);
-
-            // Remove old layers and sources
-            if (map.getLayer('collision-cluster')) map.removeLayer('collision-cluster');
-            if (map.getLayer('collision-count')) map.removeLayer('collision-count');
-            if (map.getLayer('collision-points')) map.removeLayer('collision-points');
-            if (map.getSource('collision-points')) map.removeSource('collision-points');
-
-            map.addSource('collision-points', {
-                type: 'geojson',
-                data: collisionData,
-                cluster: true,
-                clusterMaxZoom: 14,
-                clusterRadius: 50
-            });
-
-            // Clustering layer
-            map.addLayer({
-                id: 'collision-cluster',
-                type: 'circle',
-                source: 'collision-points',
-                filter: ['has', 'point_count'],
-                paint: {
-                    'circle-color': [
-                        'step',
-                        ['get', 'point_count'],
-                        '#51bbd6', 10,
-                        '#f1f075', 50,
-                        '#f28cb1'
-                    ],
-                    'circle-radius': [
-                        'step',
-                        ['get', 'point_count'],
-                        15, 10,
-                        20, 50,
-                        30
-                    ]
-                }
-            });
-
-            // Cluster count labels
-            map.addLayer({
-                id: 'collision-count',
-                type: 'symbol',
-                source: 'collision-points',
-                filter: ['has', 'point_count'],
-                layout: {
-                    'text-field': '{point_count_abbreviated}',
-                    'text-font': ['DIN Offc Pro Medium', 'Arial Unicode MS Bold'],
-                    'text-size': 12
-                },
-                paint: {
-                    'text-color': '#000'
-                }
-            });
-
-            // Individual collision points
-            map.addLayer({
-                id: 'collision-points',
-                type: 'circle',
-                source: 'collision-points',
-                filter: ['!', ['has', 'point_count']],
-                paint: {
-                    'circle-radius': 5,
-                    'circle-color': '#0000FF'
-                }
-            });
+            const response = await fetch(crashDataFiles[year]);
+            const crashData = await response.json();
+            
+            if (map.getSource('crashes')) {
+                map.getSource('crashes').setData(crashData);
+            } else {
+                map.addSource('crashes', {
+                    type: 'geojson',
+                    data: crashData,
+                    cluster: true,
+                    clusterMaxZoom: 14,
+                    clusterRadius: 50
+                });
+                
+                map.addLayer({
+                    id: 'clusters',
+                    type: 'circle',
+                    source: 'crashes',
+                    filter: ['has', 'point_count'],
+                    paint: {
+                        'circle-color': [
+                            'step', ['get', 'point_count'],
+                            '#51bbd6', 10,
+                            '#f1f075', 50,
+                            '#f28cb1'
+                        ],
+                        'circle-radius': [
+                            'step', ['get', 'point_count'],
+                            15, 10,
+                            20, 50,
+                            25
+                        ]
+                    }
+                });
+                
+                map.addLayer({
+                    id: 'cluster-count',
+                    type: 'symbol',
+                    source: 'crashes',
+                    filter: ['has', 'point_count'],
+                    layout: {
+                        'text-field': ['get', 'point_count_abbreviated'],
+                        'text-font': ['DIN Offc Pro Medium', 'Arial Unicode MS Bold'],
+                        'text-size': 12
+                    }
+                });
+                
+                map.addLayer({
+                    id: 'unclustered-points',
+                    type: 'circle',
+                    source: 'crashes',
+                    filter: ['!', ['has', 'point_count']],
+                    paint: {
+                        'circle-color': '#ff0000',
+                        'circle-radius': 5
+                    }
+                });
+            }
         };
 
         document.getElementById('yearSlider').addEventListener('input', (event) => {
