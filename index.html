@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>New York Traffic Project</title>
+    <title>New York Collision Map</title>
     <link href="https://api.mapbox.com/mapbox-gl-js/v2.5.0/mapbox-gl.css" rel="stylesheet">
     <script src="https://api.mapbox.com/mapbox-gl-js/v2.5.0/mapbox-gl.js"></script>
     <style>
@@ -33,7 +33,7 @@
 <body>
     <div id="map"></div>
     <div id="controls">
-        <h1>New York Traffic Flow</h1>
+        <h1>New York Collision Map</h1>
         <label for="yearSlider">Year: <span id="active-year">2020</span></label>
         <input id="yearSlider" type="range" min="2020" max="2023" step="1" value="2020">
     </div>
@@ -46,13 +46,6 @@
             zoom: 10
         });
 
-        const trafficGeojsonFiles = {
-            2020: 'NYC_Traffic_2020.geojson',
-            2021: 'NYC_Traffic_2021.geojson',
-            2022: 'NYC_Traffic_2022.geojson',
-            2023: 'NYC_Traffic_2023.geojson'
-        };
-
         const collisionGeojsonFiles = {
             2020: 'NewYork_Crashes_2020.geojson',
             2021: 'NewYork_Crashes_2021.geojson',
@@ -61,70 +54,78 @@
         };
 
         const loadGeoJSON = async (file) => {
-            const response = await fetch(file);
+            const response = await fetch(file + "?t=" + new Date().getTime());
             return await response.json();
         };
 
         const updateMap = async (year) => {
-            const trafficData = await loadGeoJSON(trafficGeojsonFiles[year]);
             const collisionData = await loadGeoJSON(collisionGeojsonFiles[year]);
-            
-            if (map.getSource('traffic-flow')) {
-                map.getSource('traffic-flow').setData(trafficData);
-            } else {
-                map.addSource('traffic-flow', { type: 'geojson', data: trafficData });
-                map.addLayer({
-                    id: 'traffic-heat',
-                    type: 'heatmap',
-                    source: 'traffic-flow',
-                    paint: {
-                        'heatmap-weight': ['interpolate', ['linear'], ['get', 'AADT'], 0, 0, 100000, 1],
-                        'heatmap-intensity': ['interpolate', ['linear'], ['zoom'], 10, 1, 15, 3],
-                        'heatmap-color': [
-                            'interpolate',
-                            ['linear'],
-                            ['heatmap-density'],
-                            0, 'rgba(0,255,0,0)',
-                            0.2, 'rgb(0,255,0)',
-                            0.4, 'rgb(255,255,0)',
-                            0.6, 'rgb(255,191,0)',
-                            0.8, 'rgb(255,128,0)',
-                            1, 'rgb(255,0,0)'
-                        ],
-                        'heatmap-radius': ['interpolate', ['linear'], ['zoom'], 10, 20, 15, 30]
-                    }
-                });
-            }
-            
-            if (map.getSource('collision-points')) {
-                map.getSource('collision-points').setData(collisionData);
-            } else {
-                map.addSource('collision-points', { type: 'geojson', data: collisionData, cluster: true, clusterMaxZoom: 14, clusterRadius: 50 });
-                map.addLayer({
-                    id: 'collision-clusters',
-                    type: 'circle',
-                    source: 'collision-points',
-                    filter: ['has', 'point_count'],
-                    paint: {
-                        'circle-color': [
-                            'step', ['get', 'point_count'],
-                            '#51bbd6', 100, '#f1f075', 750, '#f28cb1'
-                        ],
-                        'circle-radius': ['step', ['get', 'point_count'], 15, 100, 20, 750, 25]
-                    }
-                });
-                map.addLayer({
-                    id: 'collision-count',
-                    type: 'symbol',
-                    source: 'collision-points',
-                    filter: ['has', 'point_count'],
-                    layout: {
-                        'text-field': ['get', 'point_count'],
-                        'text-font': ['DIN Offc Pro Medium', 'Arial Unicode MS Bold'],
-                        'text-size': 12
-                    }
-                });
-            }
+
+            // Remove old layers and sources
+            if (map.getLayer('collision-cluster')) map.removeLayer('collision-cluster');
+            if (map.getLayer('collision-count')) map.removeLayer('collision-count');
+            if (map.getLayer('collision-points')) map.removeLayer('collision-points');
+            if (map.getSource('collision-points')) map.removeSource('collision-points');
+
+            map.addSource('collision-points', {
+                type: 'geojson',
+                data: collisionData,
+                cluster: true,
+                clusterMaxZoom: 14,
+                clusterRadius: 50
+            });
+
+            // Clustering layer
+            map.addLayer({
+                id: 'collision-cluster',
+                type: 'circle',
+                source: 'collision-points',
+                filter: ['has', 'point_count'],
+                paint: {
+                    'circle-color': [
+                        'step',
+                        ['get', 'point_count'],
+                        '#51bbd6', 10,
+                        '#f1f075', 50,
+                        '#f28cb1'
+                    ],
+                    'circle-radius': [
+                        'step',
+                        ['get', 'point_count'],
+                        15, 10,
+                        20, 50,
+                        30
+                    ]
+                }
+            });
+
+            // Cluster count labels
+            map.addLayer({
+                id: 'collision-count',
+                type: 'symbol',
+                source: 'collision-points',
+                filter: ['has', 'point_count'],
+                layout: {
+                    'text-field': '{point_count_abbreviated}',
+                    'text-font': ['DIN Offc Pro Medium', 'Arial Unicode MS Bold'],
+                    'text-size': 12
+                },
+                paint: {
+                    'text-color': '#000'
+                }
+            });
+
+            // Individual collision points
+            map.addLayer({
+                id: 'collision-points',
+                type: 'circle',
+                source: 'collision-points',
+                filter: ['!', ['has', 'point_count']],
+                paint: {
+                    'circle-radius': 5,
+                    'circle-color': '#ff0000'
+                }
+            });
         };
 
         document.getElementById('yearSlider').addEventListener('input', (event) => {
