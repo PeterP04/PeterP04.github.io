@@ -33,7 +33,7 @@
 <body>
     <div id="map"></div>
     <div id="controls">
-        <h1>New York Collision Map</h1>
+        <h1>New York Traffic Flow</h1>
         <label for="yearSlider">Year: <span id="active-year">2020</span></label>
         <input id="yearSlider" type="range" min="2020" max="2023" step="1" value="2020">
     </div>
@@ -50,7 +50,9 @@
             2020: 'NewYork_Crashes_2020.geojson',
             2021: 'NewYork_Crashes_2021.geojson',
             2022: 'NewYork_Crashes_2022.geojson',
-            2023: 'NewYork_Crashes_2023.geojson'
+            2023: 'NewYork_Crashes_2023.geojson',
+            2024: 'NewYork_Crashes_2024.geojson',
+            2025: 'NewYork_Crashes_2025.geojson'
         };
 
         const loadGeoJSON = async (file) => {
