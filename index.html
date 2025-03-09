@@ -28,6 +28,20 @@
             border-radius: 8px;
             box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
         }
+        #legend {
+            margin-top: 15px;
+            font-size: 14px;
+        }
+        .legend-key {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            margin-right: 5px;
+            border-radius: 50%;
+        }
+        .blue-dot {
+            background: #0000FF;
+        }
     </style>
 </head>
 <body>
@@ -36,6 +50,9 @@
         <h1>New York City Collision Map</h1>
         <label for="yearSlider">Year: <span id="active-year">2020</span></label>
         <input id="yearSlider" type="range" min="2020" max="2025" step="1" value="2020">
+        <div id="legend">
+            <p><span class="legend-key blue-dot"></span> Individual Collisions</p>
+        </div>
     </div>
     <script>
         mapboxgl.accessToken = 'pk.eyJ1IjoiZWR3YXJkcDciLCJhIjoiY2xzZjZhZnYwMGdrbDJpcXB6MzZsN2lzbSJ9.o11htKQkTmOqa1HNdhtenQ';
