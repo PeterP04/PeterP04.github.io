@@ -38,7 +38,7 @@
         <input id="yearSlider" type="range" min="2020" max="2023" step="1" value="2020">
     </div>
     <script>
-        mapboxgl.accessToken = 'pk.eyJ1IjoiZWR3YXJkcDciLCJhIjoiY2xzZjZhZnYwMGdrbDJpcXB6MzZsN2lzbSJ9.o11htKQkTmOqa1HNdhtenQ';
+        mapboxgl.accessToken = 'YOUR_MAPBOX_ACCESS_TOKEN';
         const map = new mapboxgl.Map({
             container: 'map',
             style: 'mapbox://styles/mapbox/light-v11',
@@ -81,7 +81,7 @@
                     type: 'heatmap',
                     source: 'traffic-flow',
                     paint: {
-                        'heatmap-weight': ['interpolate', ['linear'], ['get', 'traffic'], 0, 0, 100, 1],
+                        'heatmap-weight': ['interpolate', ['linear'], ['get', 'AADT'], 0, 0, 100000, 1],
                         'heatmap-intensity': ['interpolate', ['linear'], ['zoom'], 10, 1, 15, 3],
                         'heatmap-color': [
                             'interpolate',
@@ -104,15 +104,42 @@
             } else {
                 map.addSource('collision-points', {
                     type: 'geojson',
-                    data: collisionData
+                    data: collisionData,
+                    cluster: true,
+                    clusterMaxZoom: 14,
+                    clusterRadius: 50
                 });
                 map.addLayer({
-                    id: 'collision-layer',
+                    id: 'collision-clusters',
                     type: 'circle',
                     source: 'collision-points',
+                    filter: ['has', 'point_count'],
                     paint: {
+                        'circle-color': ['step', ['get', 'point_count'], '#51bbd6', 10, '#f1f075', 30, '#f28cb1'],
+                        'circle-radius': ['step', ['get', 'point_count'], 15, 10, 20, 30, 25]
+                    }
+                });
+                map.addLayer({
+                    id: 'collision-cluster-count',
+                    type: 'symbol',
+                    source: 'collision-points',
+                    filter: ['has', 'point_count'],
+                    layout: {
+                        'text-field': '{point_count_abbreviated}',
+                        'text-font': ['DIN Offc Pro Medium', 'Arial Unicode MS Bold'],
+                        'text-size': 12
+                    }
+                });
+                map.addLayer({
+                    id: 'collision-unclustered-point',
+                    type: 'circle',
+                    source: 'collision-points',
+                    filter: ['!', ['has', 'point_count']],
+                    paint: {
+                        'circle-color': '#0000FF',
                         'circle-radius': 5,
-                        'circle-color': '#0000FF'
+                        'circle-stroke-width': 1,
+                        'circle-stroke-color': '#FFFFFF'
                     }
                 });
             }
@@ -128,4 +155,3 @@
     </script>
 </body>
 </html>
-
