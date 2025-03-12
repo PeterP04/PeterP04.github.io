@@ -1,174 +1,367 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en-US">
 <head>
-    <meta charset="UTF-8">
+    <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Responsive Project Description</title>
+    <title>New York City Traffic Map</title>
+    <link rel="icon" type="image/png" href="assets/Traffic_Project_Favicon.png">
+    <link href="https://api.mapbox.com/mapbox-gl-js/v2.5.0/mapbox-gl.css" rel="stylesheet">
+    <script src="https://api.mapbox.com/mapbox-gl-js/v2.5.0/mapbox-gl.js"></script>
     <style>
-        /* Reset and base styling */
-        * {
+        /* NAVIGATION STYLING */
+        /* Add a black background color to the top navigation */
+        .topnav {
+          background-color: rgb(0, 0, 0);
+          overflow: hidden;
+        }
+
+        /* Style the links inside the navigation bar */
+        .topnav a {
+          float: left;
+          display: block;
+          color: #f2f2f2;
+          text-align: center;
+          padding: 14px 16px;
+          text-decoration: none;
+          font-size: 26px;
+        }
+
+        /* Change the color of links on hover */
+        .topnav a:hover {
+          background-color: #ddd;
+          color: black;
+        }
+
+        /* Add an active class to highlight the current page */
+        .topnav a.active {
+          background-color: #002fff;
+          color: white;
+        }
+
+        /* Hide the icon that should open and close the topnav on small screens */
+        .topnav .icon {
+          display: none;
+        }
+
+        /* Style for page content */
+        .content {
+          padding: 14px;
+          font-size: 22px;
+        }
+
+        /* When the screen is less than 800 pixels wide */
+        @media screen and (max-width: 800px) {
+          /* Hide all links, except for the selected tab */
+          .topnav a:not(.active) {
+            display: none;
+          }
+
+          /* Show the icon that should open and close the topnav */
+          .topnav a.icon {
+            float: right;
+            display: block;
+          }
+        }
+
+        /* When the screen is less than 800 pixels wide, if the user clicks on the icon */
+        /* the "responsive" class attribute will be added to the topnav by the JavaScript code */
+        /* This media query sets the style for the unfolded topnav */
+        /* It makes the topnav look good on small screens (display the links vertically instead of horizontally)  */
+        @media screen and (max-width: 800px) {
+          .topnav.responsive {
+            position: relative;
+          }
+
+          .topnav.responsive a.icon {
+            position: absolute;
+            right: 0;
+            top: 0;
+          }
+
+          .topnav.responsive a {
+            float: none;
+            display: block;
+            text-align: left;
+          }
+        }
+        /* END OF NAVIGATION STYLING */
+        body, html {
             margin: 0;
             padding: 0;
-            box-sizing: border-box;
-            font-family: Arial, sans-serif;
+            height: 100%;
+            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
         }
-
-        body {
-            background-color: #f4f4f4;
-            height: 100vh;
-            margin: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            flex-direction: column;
-        }
-
-        /* Navigation bar styling */
-        .topnav {
-            background-color: rgb(0, 0, 0);
-            overflow: hidden;
-            position: fixed;
+        #map {
+            position: absolute;
+            top: 50px;
+            bottom: 0;
             width: 100%;
-            top: 0;
-            z-index: 1;
         }
-
-        /* Navigation links */
-        .topnav a {
-            float: left;
-            display: block;
-            color: #f2f2f2;
-            text-align: center;
-            padding: 14px 16px;
-            text-decoration: none;
-            font-size: 20px;
+        #controls {
+            position: absolute;
+            top: 60px;
+            left: 30px;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 15px 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
         }
-
-        /* Hover effect for links */
-        .topnav a:hover {
-            background-color: #ddd;
-            color: black;
+        #legend {
+            margin-top: 15px;
+            font-size: 14px;
         }
-
-        /* Active link styling */
-        .topnav a.active {
-            background-color: #002fff;
-            color: white;
+        .legend-key {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            margin-right: 5px;
+            border-radius: 50%;
+            border: 1px solid black; /* Add black border */
         }
-
-        /* Responsive icon styling */
-        .topnav .icon {
-            display: none;
-        }
-
-        /* Project card styling */
-        .project-card {
-            background-color: #fff;
-            border-radius: 12px;
-            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
-            padding: 4vw;
-            max-width: 90vw;
-            margin: 100px auto;
-            text-align: center;
-        }
-
-        .project-title {
-            font-size: calc(28px + 1vw);
-            margin-bottom: 1vw;
-            color: #333;
-        }
-
-        .project-author, .project-date {
-            font-size: calc(16px + 0.5vw);
-            color: #777;
-            margin-bottom: 0.5vw;
-        }
-
-        .project-description {
-            font-size: calc(18px + 0.5vw);
-            color: #555;
-            line-height: 1.6;
-            max-width: 800px;
-            margin: 0 auto;
-        }
-
-        /* Responsive styling for smaller screens */
-        @media screen and (max-width: 800px) {
-            .topnav a:not(.active) {
-                display: none;
-            }
-
-            .topnav a.icon {
-                float: right;
-                display: block;
-            }
-
-            .topnav.responsive {
-                position: relative;
-            }
-
-            .topnav.responsive a.icon {
-                position: absolute;
-                right: 0;
-                top: 0;
-            }
-
-            .topnav.responsive a {
-                float: none;
-                display: block;
-                text-align: left;
-            }
-
-            .project-card {
-                padding: 6vw;
-                margin: 120px auto;
-            }
-
-            .project-title {
-                font-size: 24px;
-            }
-
-            .project-author, .project-date, .project-description {
-                font-size: 16px;
-            }
+        .blue-dot {
+            background: #0000FF;
         }
     </style>
 </head>
 <body>
-    <!-- Navigation bar -->
+     <!-- FOR NAVIGATION -->
     <div class="topnav" id="myTopnav">
-        <a class="active" href="testing.html">Intro</a>
+        <a href="intro.html">Introduction</a>
         <a href="index.html">Seattle</a>
-        <a href="test.html">NYC</a>
-        <a href="section3.html">Section 3</a>
-        <a href="see_also.html">See Also</a>
-        <a href="references.html">References</a>
-        <!-- Hamburger menu icon -->
-        <a href="javascript:void(0);" class="icon" onclick="responsive_control()">
-            &#9776;
-        </a>
+        <a class="active" href="nyc.html">NYC</a>
+        <a href="conclusion.html">Conclusion</a>
+        <!-- "Hamburger menu" / "Bar icon" to toggle the navigation links -->
+        <a href="javascript:void(0);" class="icon">
+            <i class="fa fa-bars"></i>
+          </a>
     </div>
-
-    <!-- Project description card -->
-    <div class="project-card">
-        <h2 class="project-title">Traffic Project</h2>
-        <p class="project-author">By: Andrew Hoch, Cameron Smutz, Edward Park, Leo Shi, Peter Pham</p>
-        <p class="project-date">Date: March 12, 2025</p>
-        <p class="project-description">
-            Project desc...
-        </p>
+    <!-- END OF NAVIGATION -->
+    <div id="map"></div>
+    <div id="controls">
+        <h1>New York City Traffic Map</h1>
+        <label for="yearSlider">Year: <span id="active-year">2020</span></label>
+        <input id="yearSlider" type="range" min="2020" max="2023" step="1" value="2020">
+        <div>
+            <input type="checkbox" id="toggleCrashLayer">
+            <label for="toggleCrashLayer">Show Collision Heatmap</label>
+        </div>
+        <div id="legend">
+            <h3>Average Annual Daily Traffic</h3>
+            <p><span class="legend-key" style="background: rgb(8,81,156);"></span>5000</p>
+            <p><span class="legend-key" style="background: rgb(49,130,189);"></span>10000</p>
+            <p><span class="legend-key" style="background: rgb(107,174,214);"></span>20000</p>
+            <p><span class="legend-key" style="background: rgb(189,215,231);"></span>50000</p>
+            <p><span class="legend-key" style="background: rgb(239,243,255);"></span>100000+</p>
+        </div>
     </div>
-
-    <!-- JavaScript for responsive navigation -->
     <script>
+    mapboxgl.accessToken = 'pk.eyJ1IjoiZWR3YXJkcDciLCJhIjoiY2xzZjZhZnYwMGdrbDJpcXB6MzZsN2lzbSJ9.o11htKQkTmOqa1HNdhtenQ';
+        // FOR NAVIGATION
+        // Get the element with the class "icon"
+        let icon = document.getElementsByClassName("icon")[0];
+
+        // Add an event listener for the 'click' event on the icon element
+        icon.addEventListener('click', responsive_control);
+
+        // Function to control the responsiveness of the navigation bar
         function responsive_control() {
-            var x = document.getElementById("myTopnav");
+            // Get the element with the id "myTopnav"
+            let x = document.getElementById("myTopnav");
+
+            // Check if the class name of the element is "topnav"
             if (x.className === "topnav") {
-                x.className += " responsive";
-            } else {
-                x.className = "topnav";
-            }
+            // If it is, add the "responsive" class to the element
+            x.className += " responsive";
+          } else {
+            // If it's not, remove the "responsive" class from the element
+            x.className = "topnav";
+          }
         }
-    </script>
+        // END OF NAVIGATION
+        const map = new mapboxgl.Map({
+            container: 'map',
+            style: 'mapbox://styles/mapbox/dark-v11',
+            center: [-74.006, 40.7128],
+            zoom: 10
+        });
+
+        const collisionGeojsonFiles = {
+            2020: 'assets/nyc_crashes_2020_minimized.geojson',
+            2021: 'assets/nyc_crashes_2021_minimized.geojson',
+            2022: 'assets/nyc_crashes_2022_minimized.geojson',
+            2023: 'assets/nyc_crashes_2023_minimized.geojson',
+            // 2024: 'assets/nyc_crashes_2024_optimized.geojson',
+            // 2025: 'assets/nyc_crashes_2025_optimized.geojson'
+        };
+
+        const trafficGeojsonFiles = {
+            2020: 'assets/NYC_Traffic_minimized.geojson',
+            2021: 'assets/NYC_Traffic_minimized.geojson',
+            2022: 'assets/NYC_Traffic_minimized.geojson',
+            2023: 'assets/NYC_Traffic_minimized.geojson'
+        };
+
+        const loadGeoJSON = async (file) => {
+            const response = await fetch(file + "?t=" + new Date().getTime());
+            return await response.json();
+        };
+
+        
+
+        const updateTrafficLayer = async (year) => {
+            const trafficData = await loadGeoJSON(trafficGeojsonFiles[year]);
+
+            if (map.getLayer('traffic-symbols')) map.removeLayer('traffic-symbols');
+            if (map.getLayer('traffic-point')) map.removeLayer('traffic-point');
+            if (map.getSource('traffic-points')) map.removeSource('traffic-points');
+
+            map.addSource('traffic-points', {
+                type: 'geojson',
+                data: trafficData
+            });
+
+            map.addLayer({
+                id: 'traffic-symbols',
+                type: 'heatmap',
+                source: 'traffic-points',
+                maxzoom: 15,
+                paint: {
+                    'heatmap-weight': [
+                        'interpolate',
+                        ['linear'],
+                        ['to-number', ['get', `AADT_${year}`]], // Ensure AADT is read as an integer
+                        1, 0,
+                        5000, 0.2, 
+                        10000, 0.4, 
+                        20000, 0.6,
+                        50000, 0.8,
+                        100000, 1
+                    ],
+                    'heatmap-intensity': [
+                        'interpolate',
+                        ['linear'],
+                        ['zoom'],
+                        11, 1,
+                        15, 3
+                    ],
+                    // Color ramp for heatmap.  Domain is 0 (low) to 1 (high).
+                    // Begin color ramp at 0-stop with a 0-transparency color
+                    // to create a blur-like effect.
+                    'heatmap-color': [
+                        'interpolate',
+                        ['linear'],
+                        ['heatmap-density'],
+                        0, 'rgba(8,81,156,0)',
+                        0.2, 'rgb(8,81,156)',
+                        0.4, 'rgb(49,130,189)',
+                        0.6, 'rgb(107,174,214)',
+                        0.8, 'rgb(189,215,231)',
+                        1, 'rgb(239,243,255)'
+                    ],
+                    // Adjust the heatmap radius by zoom level
+                    'heatmap-radius': [
+                        'interpolate',
+                        ['linear'],
+                        ['zoom'],
+                        10, 11,
+                        18, 25
+                    ],
+                     'heatmap-opacity': {
+                        default: 1,
+                        stops: [
+                        [14, 1],
+                        [15, 0]
+        ]
+      }
+                }
+            });
+    const loadGeoJSON = async (file) => {
+            const response = await fetch(file + "?t=" + new Date().getTime());
+            return await response.json();
+        };
+
+        const updateMap = async (year) => {
+            const collisionData = await loadGeoJSON(collisionGeojsonFiles[year]);
+
+            if (map.getLayer('collision-cluster')) map.removeLayer('collision-cluster');
+            if (map.getLayer('collision-count')) map.removeLayer('collision-count');
+            if (map.getLayer('collision-points')) map.removeLayer('collision-points');
+            if (map.getSource('collision-points')) map.removeSource('collision-points');
+
+            map.addSource('collision-points', {
+                type: 'geojson',
+                data: collisionData,
+                cluster: true,
+                clusterMaxZoom: 14,
+                clusterRadius: 50
+            });
+
+            // Clustering layer
+            map.addLayer({
+                id: 'collision-cluster',
+                type: 'circle',
+                source: 'collision-points',
+                filter: ['has', 'point_count'],
+                paint: {
+                    'circle-color': [
+                        'step',
+                        ['get', 'point_count'],
+                        '#51bbd6', 100,
+                        '#f1f075', 1000,
+                        '#f28cb1'
+                    ],
+                    'circle-radius': [
+                        'step',
+                        ['get', 'point_count'],
+                        15, 10,
+                        20, 30,
+                        25
+                    ]
+                }
+            });
+
+            // Cluster count labels
+            map.addLayer({
+                id: 'collision-count',
+                type: 'symbol',
+                source: 'collision-points',
+                filter: ['has', 'point_count'],
+                layout: {
+                    'text-field': '{point_count_abbreviated}',
+                    'text-font': ['DIN Offc Pro Medium', 'Arial Unicode MS Bold'],
+                    'text-size': 12
+                },
+                paint: {
+                    'text-color': '#000'
+                }
+            });
+
+            // Individual collision points
+            map.addLayer({
+                id: 'collision-points',
+                type: 'circle',
+                source: 'collision-points',
+                filter: ['!', ['has', 'point_count']],
+                paint: {
+                    'circle-radius': 5,
+                    'circle-color': '#0000FF'
+                }
+            });
+        };
+    document.getElementById('yearSlider').addEventListener('input', (event) => {
+            const year = event.target.value;
+            document.getElementById('active-year').textContent = year;
+            updateMap(year);
+            updateTrafficLayer(year);
+        });
+
+        document.getElementById('toggleCrashLayer').addEventListener('change', (event) => {
+            const visibility = event.target.checked ? 'visible' : 'none';
+            map.setLayoutProperty('collision-heatmap', 'visibility', visibility);
+        });
+
+        updateMap(2020);
+        updateTrafficLayer(2020);
+</script>
 </body>
 </html>
