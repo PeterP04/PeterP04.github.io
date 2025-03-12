@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Project Description</title>
+    <title>Responsive Project Description</title>
     <style>
         * {
             margin: 0;
@@ -18,48 +18,61 @@
             display: flex;
             justify-content: center;
             align-items: center;
+            padding: 20px;
         }
 
         .project-card {
             background-color: #fff;
             border-radius: 12px;
             box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
-            padding: 40px;
-            width: 90vw;
+            padding: 5vw;
+            width: 100%;
             max-width: 1000px;
             text-align: center;
-            margin: 20px;
         }
 
         .project-title {
-            font-size: 36px;
-            margin-bottom: 20px;
+            font-size: calc(24px + 1vw);
+            margin-bottom: 1vw;
             color: #333;
         }
 
         .project-author, .project-date {
-            font-size: 18px;
+            font-size: calc(14px + 0.5vw);
             color: #777;
-            margin-bottom: 10px;
+            margin-bottom: 0.5vw;
         }
 
         .project-description {
-            font-size: 20px;
+            font-size: calc(16px + 0.5vw);
             color: #555;
-            line-height: 1.8;
+            line-height: 1.6;
+        }
+
+        @media (max-width: 600px) {
+            .project-card {
+                padding: 4vw;
+            }
+
+            .project-title {
+                font-size: 24px;
+            }
+
+            .project-author, .project-date, .project-description {
+                font-size: 16px;
+            }
         }
     </style>
 </head>
 <body>
     <div class="project-card">
-        <h2 class="project-title">Project Title</h2>
+        <h2 class="project-title">Responsive Project Title</h2>
         <p class="project-author">By: Your Name</p>
         <p class="project-date">Date: March 11, 2025</p>
         <p class="project-description">
-            This project is a web application designed to manage tasks efficiently. 
-            It features a sleek user interface, intuitive navigation, and advanced 
-            functionalities such as real-time updates and offline support. 
-            The goal is to enhance productivity by providing users with an organized and easy-to-use platform.
+            This project is a responsive web application designed to manage tasks efficiently. 
+            It features a sleek, user-friendly interface that adapts to different screen sizes, 
+            ensuring a great experience on mobile, tablet, and desktop devices.
         </p>
     </div>
 </body>
