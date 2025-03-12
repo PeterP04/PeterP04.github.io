@@ -5,81 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Responsive Project Description</title>
     <style>
-        /* Add a black background color to the top navigation */
-        .topnav {
-          background-color: rgb(0, 0, 0);
-          overflow: hidden;
-        }
-
-        /* Style the links inside the navigation bar */
-        .topnav a {
-          float: left;
-          display: block;
-          color: #f2f2f2;
-          text-align: center;
-          padding: 14px 16px;
-          text-decoration: none;
-          font-size: 26px;
-        }
-
-        /* Change the color of links on hover */
-        .topnav a:hover {
-          background-color: #ddd;
-          color: black;
-        }
-
-        /* Add an active class to highlight the current page */
-        .topnav a.active {
-          background-color: #002fff;
-          color: white;
-        }
-
-        /* Hide the icon that should open and close the topnav on small screens */
-        .topnav .icon {
-          display: none;
-    }
-
-        /* Style for page content */
-        .content {
-          padding: 14px;
-          font-size: 22px;
-        }
-
-        /* When the screen is less than 800 pixels wide */
-        @media screen and (max-width: 800px) {
-          /* Hide all links, except for the selected tab */
-          .topnav a:not(.active) {
-            display: none;
-          }
-
-          /* Show the icon that should open and close the topnav */
-          .topnav a.icon {
-            float: right;
-            display: block;
-          }
-        }
-
-        /* When the screen is less than 800 pixels wide, if the user clicks on the icon */
-        /* the "responsive" class attribute will be added to the topnav by the JavaScript code */
-        /* This media query sets the style for the unfolded topnav */
-        /* It makes the topnav look good on small screens (display the links vertically instead of horizontally)  */
-        @media screen and (max-width: 800px) {
-          .topnav.responsive {
-            position: relative;
-          }
-
-          .topnav.responsive a.icon {
-            position: absolute;
-            right: 0;
-            top: 0;
-          }
-
-          .topnav.responsive a {
-            float: none;
-            display: block;
-            text-align: left;
-          }
-        }
+        /* Reset and base styling */
         * {
             margin: 0;
             padding: 0;
@@ -91,11 +17,47 @@
             background-color: #f4f4f4;
             height: 100vh;
             margin: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
         }
 
+        /* Navigation bar styling */
+        .topnav {
+            background-color: rgb(0, 0, 0);
+            overflow: hidden;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1;
+        }
+
+        /* Navigation links */
+        .topnav a {
+            float: left;
+            display: block;
+            color: #f2f2f2;
+            text-align: center;
+            padding: 14px 16px;
+            text-decoration: none;
+            font-size: 26px;
+        }
+
+        /* Hover effect for links */
+        .topnav a:hover {
+            background-color: #ddd;
+            color: black;
+        }
+
+        /* Active link styling */
+        .topnav a.active {
+            background-color: #002fff;
+            color: white;
+        }
+
+        /* Responsive icon styling */
+        .topnav .icon {
+            display: none;
+        }
+
+        /* Project card styling */
         .project-card {
             background-color: #fff;
             border-radius: 12px;
@@ -103,10 +65,7 @@
             padding: 5vw;
             width: 100%;
             max-width: 1000px;
-            height: 70vh; 
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
+            margin: 80px auto; /* Space from the navigation bar */
             text-align: center;
         }
 
@@ -128,10 +87,36 @@
             line-height: 1.6;
         }
 
-        @media (max-width: 600px) {
+        /* Responsive styling for smaller screens */
+        @media screen and (max-width: 800px) {
+            .topnav a:not(.active) {
+                display: none;
+            }
+
+            .topnav a.icon {
+                float: right;
+                display: block;
+            }
+
+            .topnav.responsive {
+                position: relative;
+            }
+
+            .topnav.responsive a.icon {
+                position: absolute;
+                right: 0;
+                top: 0;
+            }
+
+            .topnav.responsive a {
+                float: none;
+                display: block;
+                text-align: left;
+            }
+
             .project-card {
                 padding: 4vw;
-                height: auto; /* Adjust height for small screens */
+                margin: 100px auto; /* Adjust margin for mobile */
             }
 
             .project-title {
@@ -145,18 +130,21 @@
     </style>
 </head>
 <body>
+    <!-- Navigation bar -->
     <div class="topnav" id="myTopnav">
         <a href="index.html">Seattle</a>
         <a href="test.html">NYC</a>
-        <a class="active" href="testing.html">intro</a>
+        <a class="active" href="testing.html">Intro</a>
         <a href="section3.html">Section 3</a>
         <a href="see_also.html">See Also</a>
         <a href="references.html">References</a>
-        <!-- "Hamburger menu" / "Bar icon" to toggle the navigation links -->
+        <!-- Hamburger menu icon -->
         <a href="javascript:void(0);" class="icon">
             <i class="fa fa-bars"></i>
-          </a>
+        </a>
     </div>
+
+    <!-- Project description card -->
     <div class="project-card">
         <h2 class="project-title">Responsive Project Title</h2>
         <p class="project-author">By: Your Name</p>
@@ -167,27 +155,23 @@
             ensuring a great experience on mobile, tablet, and desktop devices.
         </p>
     </div>
-     <script>
-        mapboxgl.accessToken = 'pk.eyJ1IjoiZWR3YXJkcDciLCJhIjoiY2xzZjZhZnYwMGdrbDJpcXB6MzZsN2lzbSJ9.o11htKQkTmOqa1HNdhtenQ';
-        // Get the element with the class "icon"
+
+    <!-- JavaScript for responsive navigation -->
+    <script>
+        // Get the icon element
         let icon = document.getElementsByClassName("icon")[0];
 
-        // Add an event listener for the 'click' event on the icon element
+        // Add an event listener to the icon
         icon.addEventListener('click', responsive_control);
 
-        // Function to control the responsiveness of the navigation bar
+        // Function to toggle responsive navigation
         function responsive_control() {
-            // Get the element with the id "myTopnav"
             let x = document.getElementById("myTopnav");
-
-            // Check if the class name of the element is "topnav"
             if (x.className === "topnav") {
-            // If it is, add the "responsive" class to the element
-            x.className += " responsive";
-          } else {
-            // If it's not, remove the "responsive" class from the element
-            x.className = "topnav";
-          }
+                x.className += " responsive";
+            } else {
+                x.className = "topnav";
+            }
         }
     </script>
 </body>
