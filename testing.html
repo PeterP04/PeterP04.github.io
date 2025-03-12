@@ -281,73 +281,74 @@
         };
 
         const updateMap = async (year) => {
-            const collisionData = await loadGeoJSON(collisionGeojsonFiles[year]);
+    const collisionData = await loadGeoJSON(collisionGeojsonFiles[year]);
 
-            if (map.getLayer('collision-cluster')) map.removeLayer('collision-cluster');
-            if (map.getLayer('collision-count')) map.removeLayer('collision-count');
-            if (map.getLayer('collision-points')) map.removeLayer('collision-points');
-            if (map.getSource('collision-points')) map.removeSource('collision-points');
+    if (map.getLayer('collision-cluster')) map.removeLayer('collision-cluster');
+    if (map.getLayer('collision-count')) map.removeLayer('collision-count');
+    if (map.getLayer('collision-points')) map.removeLayer('collision-points');
+    if (map.getSource('collision-points')) map.removeSource('collision-points');
 
-            map.addSource('collision-points', {
-                type: 'geojson',
-                data: collisionData,
-                cluster: true,
-                clusterMaxZoom: 14,
-                clusterRadius: 50
-            });
+    map.addSource('collision-points', {
+        type: 'geojson',
+        data: collisionData,
+        cluster: true,
+        clusterMaxZoom: 14,
+        clusterRadius: 50
+    });
 
-            // Clustering layer
-            map.addLayer({
-                id: 'collision-cluster',
-                type: 'circle',
-                source: 'collision-points',
-                filter: ['has', 'point_count'],
-                paint: {
-                    'circle-color': [
-                        'step',
-                        ['get', 'point_count'],
-                        '#51bbd6', 100,
-                        '#f1f075', 1000,
-                        '#f28cb1'
-                    ],
-                    'circle-radius': [
-                        'step',
-                        ['get', 'point_count'],
-                        15, 10,
-                        20, 30,
-                        25
-                    ]
-                }
-            });
+    // Clustering layer
+    map.addLayer({
+        id: 'collision-cluster',
+        type: 'circle',
+        source: 'collision-points',
+        filter: ['has', 'point_count'],
+        paint: {
+            'circle-color': [
+                'step',
+                ['get', 'point_count'],
+                '#51bbd6', 100,
+                '#f1f075', 1000,
+                '#f28cb1'
+            ],
+            'circle-radius': [
+                'step',
+                ['get', 'point_count'],
+                15, 10,
+                20, 30,
+                25
+            ]
+        }
+    });
 
-            // Cluster count labels
-            map.addLayer({
-                id: 'collision-count',
-                type: 'symbol',
-                source: 'collision-points',
-                filter: ['has', 'point_count'],
-                layout: {
-                    'text-field': '{point_count_abbreviated}',
-                    'text-font': ['DIN Offc Pro Medium', 'Arial Unicode MS Bold'],
-                    'text-size': 12
-                },
-                paint: {
-                    'text-color': '#000'
-                }
-            });
+    // Cluster count labels
+    map.addLayer({
+        id: 'collision-count',
+        type: 'symbol',
+        source: 'collision-points',
+        filter: ['has', 'point_count'],
+        layout: {
+            'text-field': '{point_count_abbreviated}',
+            'text-font': ['DIN Offc Pro Medium', 'Arial Unicode MS Bold'],
+            'text-size': 12
+        },
+        paint: {
+            'text-color': '#000'
+        }
+    });
 
-            // Individual collision points
-            map.addLayer({
-                id: 'collision-points',
-                type: 'circle',
-                source: 'collision-points',
-                filter: ['!', ['has', 'point_count']],
-                paint: {
-                    'circle-radius': 5,
-                    'circle-color': '#0000FF'
-                }
-            });
-        };
+    // Individual collision points
+    map.addLayer({
+        id: 'collision-points',
+        type: 'circle',
+        source: 'collision-points',
+        filter: ['!', ['has', 'point_count']],
+        paint: {
+            'circle-radius': 5,
+            'circle-color': '#0000FF'
+        }
+    });
+};
+
     document.getElementById('yearSlider').addEventListener('input', (event) => {
             const year = event.target.value;
             document.getElementById('active-year').textContent = year;
