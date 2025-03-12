@@ -248,6 +248,7 @@
             clusterRadius: 50
         });
 
+        // Add collision clusters after heatmap
         map.addLayer({
             id: 'collision-cluster',
             type: 'circle',
@@ -298,7 +299,7 @@
             }
         });
 
-        // Check the current state of the toggle and apply visibility
+        // Toggle visibility based on checkbox
         const isCrashLayerVisible = document.getElementById('toggleCrashLayer').checked;
         const visibility = isCrashLayerVisible ? 'visible' : 'none';
         map.setLayoutProperty('collision-cluster', 'visibility', visibility);
