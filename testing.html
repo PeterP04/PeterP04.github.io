@@ -1,5 +1,63 @@
-2. Explore the files
-In this section, we will go over the provided website template to get you familiar with the structure of a website as well as the web-programming code.
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Project Description</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
 
-2.1 Set up your computer as a local web server
-Websites live on web servers. So here we will use the Visual Studio Code plugin Live Server that we installed in Lab 1 to turn our own computer into a web server. In this way, your local computer will be both a Client (as you use it to browse your website) and a Server (as you also use it to host your website).
+        body {
+            background-color: #f4f4f4;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .project-card {
+            background-color: #fff;
+            border-radius: 12px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            max-width: 400px;
+            text-align: center;
+        }
+
+        .project-title {
+            font-size: 24px;
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        .project-author, .project-date {
+            font-size: 14px;
+            color: #777;
+            margin-bottom: 5px;
+        }
+
+        .project-description {
+            font-size: 16px;
+            color: #555;
+            line-height: 1.6;
+        }
+    </style>
+</head>
+<body>
+    <div class="project-card">
+        <h2 class="project-title">Project Title</h2>
+        <p class="project-author">By: Your Name</p>
+        <p class="project-date">Date: March 11, 2025</p>
+        <p class="project-description">
+            This project is a web application designed to manage tasks efficiently. 
+            It features a sleek user interface, intuitive navigation, and advanced 
+            functionalities such as real-time updates and offline support.
+        </p>
+    </div>
+</body>
+</html>
