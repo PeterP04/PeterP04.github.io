@@ -17,6 +17,10 @@
             background-color: #f4f4f4;
             height: 100vh;
             margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
         }
 
         /* Navigation bar styling */
@@ -37,7 +41,7 @@
             text-align: center;
             padding: 14px 16px;
             text-decoration: none;
-            font-size: 26px;
+            font-size: 20px;
         }
 
         /* Hover effect for links */
@@ -62,29 +66,30 @@
             background-color: #fff;
             border-radius: 12px;
             box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
-            padding: 5vw;
-            width: 100%;
-            max-width: 1000px;
-            margin: 80px auto; /* Space from the navigation bar */
+            padding: 4vw;
+            max-width: 90vw;
+            margin: 100px auto;
             text-align: center;
         }
 
         .project-title {
-            font-size: calc(24px + 1vw);
+            font-size: calc(28px + 1vw);
             margin-bottom: 1vw;
             color: #333;
         }
 
         .project-author, .project-date {
-            font-size: calc(14px + 0.5vw);
+            font-size: calc(16px + 0.5vw);
             color: #777;
             margin-bottom: 0.5vw;
         }
 
         .project-description {
-            font-size: calc(16px + 0.5vw);
+            font-size: calc(18px + 0.5vw);
             color: #555;
             line-height: 1.6;
+            max-width: 800px;
+            margin: 0 auto;
         }
 
         /* Responsive styling for smaller screens */
@@ -115,8 +120,8 @@
             }
 
             .project-card {
-                padding: 4vw;
-                margin: 100px auto; /* Adjust margin for mobile */
+                padding: 6vw;
+                margin: 120px auto;
             }
 
             .project-title {
@@ -139,8 +144,8 @@
         <a href="see_also.html">See Also</a>
         <a href="references.html">References</a>
         <!-- Hamburger menu icon -->
-        <a href="javascript:void(0);" class="icon">
-            <i class="fa fa-bars"></i>
+        <a href="javascript:void(0);" class="icon" onclick="responsive_control()">
+            &#9776;
         </a>
     </div>
 
@@ -158,15 +163,8 @@
 
     <!-- JavaScript for responsive navigation -->
     <script>
-        // Get the icon element
-        let icon = document.getElementsByClassName("icon")[0];
-
-        // Add an event listener to the icon
-        icon.addEventListener('click', responsive_control);
-
-        // Function to toggle responsive navigation
         function responsive_control() {
-            let x = document.getElementById("myTopnav");
+            var x = document.getElementById("myTopnav");
             if (x.className === "topnav") {
                 x.className += " responsive";
             } else {
