@@ -296,6 +296,13 @@
                 'circle-color': '#0000FF'
             }
         });
+
+        // Check the current state of the toggle and apply visibility
+        const isCrashLayerVisible = document.getElementById('toggleCrashLayer').checked;
+        const visibility = isCrashLayerVisible ? 'visible' : 'none';
+        map.setLayoutProperty('collision-cluster', 'visibility', visibility);
+        map.setLayoutProperty('collision-count', 'visibility', visibility);
+        map.setLayoutProperty('collision-points', 'visibility', visibility);
     };
 
     document.getElementById('yearSlider').addEventListener('input', (event) => {
@@ -304,7 +311,7 @@
         updateMap(year);
         updateTrafficLayer(year);
 
-        // Apply the crash layer toggle setting after year change
+        // Apply the crash layer visibility based on the checkbox after year change
         const isCrashLayerVisible = document.getElementById('toggleCrashLayer').checked;
         const visibility = isCrashLayerVisible ? 'visible' : 'none';
         map.setLayoutProperty('collision-cluster', 'visibility', visibility);
@@ -319,6 +326,7 @@
         map.setLayoutProperty('collision-points', 'visibility', visibility);
     });
 
+    // Initialize the map with 2020 data
     updateMap(2020);
     updateTrafficLayer(2020);
 </script>
