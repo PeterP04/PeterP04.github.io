@@ -15,10 +15,10 @@
         body {
             background-color: #f4f4f4;
             height: 100vh;
+            margin: 0;
             display: flex;
             justify-content: center;
             align-items: center;
-            padding: 20px;
         }
 
         .project-card {
@@ -28,6 +28,10 @@
             padding: 5vw;
             width: 100%;
             max-width: 1000px;
+            height: 90vh; /* Make the card fill most of the screen height */
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
             text-align: center;
         }
 
@@ -52,6 +56,7 @@
         @media (max-width: 600px) {
             .project-card {
                 padding: 4vw;
+                height: auto; /* Adjust height for small screens */
             }
 
             .project-title {
@@ -70,8 +75,8 @@
         <p class="project-author">By: Your Name</p>
         <p class="project-date">Date: March 11, 2025</p>
         <p class="project-description">
-            This project is a responsive web application designed to manage tasks efficiently. 
-            It features a sleek, user-friendly interface that adapts to different screen sizes, 
+            This project is a responsive web application designed to manage tasks efficiently.
+            It features a sleek, user-friendly interface that adapts to different screen sizes,
             ensuring a great experience on mobile, tablet, and desktop devices.
         </p>
     </div>
